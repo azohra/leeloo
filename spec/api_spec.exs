@@ -29,13 +29,13 @@ defmodule Leeloo.ApiSpec do
     context "different images or no images at all" do
       let :diff_images do
         %{images: %{
-            reference: shared.image_reference,
-            comparison: shared.image_comparison}
+            reference: shared.image_string_reference,
+            comparison: shared.image_string_comparison}
         }
       end
 
       let :no_images, do: %{images: %{ reference: nil, comparison: nil}}
-      let :similar_images, do: %{images: %{ reference: shared.image_reference, comparison: shared.image_reference}}
+      let :similar_images, do: %{images: %{ reference: shared.image_string_reference, comparison: shared.image_string_reference}}
 
       it "ignores the requests with invalid parameters" do
         r = build_conn()

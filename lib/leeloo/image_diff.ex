@@ -12,9 +12,12 @@ defmodule Leeloo.ImageDiff do
     Temp.track!
     dir_path = Temp.mkdir!("leeloo")
 
-    ref_path = Temp.open! "ref.png", &IO.binwrite(&1, from_data_url(reference))
-    comp_path = Temp.open! "comp.png", &IO.binwrite(&1, from_data_url(comparison))
+    ref_path = Path.join(dir_path, "ref.png")
+    comp_path = Path.join(dir_path, "comp.png")
     diff_path = Path.join(dir_path, "diff.png")
+
+    File.open!(ref_path, [:write, :binary])  |> IO.binwrite(from_data_url(reference))
+    File.open!(comp_path, [:write, :binary]) |> IO.binwrite(from_data_url(comparison))
 
     # compare -metric AE ref.png comp.png d.png
     {metrics, _} = System.cmd("compare",
@@ -42,7 +45,8 @@ defmodule Leeloo.ImageDiff do
     cond do
       String.starts_with?(data, "data:image/png;base64,") ->
         data |> String.split(",") |> List.last |> Base.decode64!
-      true -> data
+      true ->
+        data
     end
   end
 end
