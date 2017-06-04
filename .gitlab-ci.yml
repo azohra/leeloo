@@ -8,6 +8,7 @@ services:
 
 before_script:
   - mix local.hex --force
+  - mix local.rebar --force
   - mix do deps.get, compile
 
 mix:
