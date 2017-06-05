@@ -32,6 +32,10 @@ defmodule Leeloo.ImageDiff do
     # uncomment next, if interested, for debugging purposes?!
     # IO.puts("#{inspect metrics}: #{diff_path}")
     cond do
+      String.starts_with?(metrics, "compare: image widths or heights differ") ->
+        Temp.cleanup
+        {:error, :widths_or_heights_differ}
+
       (pixels_diff = String.to_integer(metrics)) > 0 ->
         with {:ok, imageData} <- File.read(diff_path) do
           base64data = Base.encode64(imageData)

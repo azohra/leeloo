@@ -18,15 +18,16 @@ For testing, we'll use these two images:
 
 The prototype must successfully return the following:
 
-- if the images match: `{"ok": "match"}` 
-- if the images are different (excerpt):  
-   `{"error": "no_match", "diff_metric": 526, "diff_visual": "data:image/png;base64,iVBORw0KGgII...=="}` 
+- if the images match: `{"ok": "match"}`
+- if the images are different (excerpt):
+   `{"error": "no_match", "diff_metric": 526, "diff_visual": "data:image/png;base64,iVBORw0KGgII...=="}`
+- if the images have different heights or widths: `{:error, :widths_or_heights_differ}`
 
 The differences between the two test images should look like this, after processing:
 
 ![](spec/fixtures/p1vsp2.png)
 
-This is a raw result, yet accurate! However, with ImageMagick, we can improve the resulting diff image even further, if need be. 
+This is a raw result, yet accurate! However, with ImageMagick, we can improve the resulting diff image even further, if need be.
 
 ## To test/dev/run the prototype
 
@@ -39,7 +40,7 @@ You'll need:
 
 ## Installation and test
 
-pull the repo and then: 
+pull the repo and then:
 
 ```shell
 $ cd leeloo
@@ -88,11 +89,11 @@ Given you Base64 encoded the desired images and having the server running at `ht
 
 ```shell
 curl -H "Content-Type:application/json" -X POST http://127.0.0.1:8080/api/compare/png_strings \
-  -d '{"images": {"reference" : "data:image/png;base64,iVBORw0KG...gg==", "comparison": "data:image/png;base64,iVBORw0KGgoRK5....CYII="}}'  
+  -d '{"images": {"reference" : "data:image/png;base64,iVBORw0KG...gg==", "comparison": "data:image/png;base64,iVBORw0KGgoRK5....CYII="}}'
 
 ```
 (the example above is using the two **different** fixture images shown earlier, for testing)
- 
+
 Mind you, the `curl` above is truncated, for brevity purpose. Please see the [curl.txt](curl.txt) file, in the project's main folder, for the full command line.
 
 With the specified curl from the example file, you'll get back information about the differences between the two given images. Leelo will return a json like this (excerpt):

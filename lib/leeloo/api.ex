@@ -87,6 +87,7 @@ defmodule Leeloo.Api do
 
       {:ok, :match} ->
         %{ok: "match"}
+      {:error, :widths_or_heights_differ} -> %{error: "widths_or_heights_differ"}
       {:error, :invalid_input} -> %{error: "invalid_input"}
       _ -> %{error: "unknown"}
     end
