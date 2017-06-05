@@ -7,16 +7,23 @@ defmodule Leeloo.Api do
 
   alias Leeloo.ImageDiff
 
+  @max_length 52_428_800 # 50MB
+
   before do
     plug Plug.Logger
+    plug Plug.Static,
+      at: "/static", length: @max_length,
+      from: Path.join(~w(#{File.cwd!} static))
+
     plug Plug.Parsers,
       json_decoder: Poison,
-      pass: ["*/*"],
+      pass: ["*/*"], length: @max_length,
       parsers: [:urlencoded, :json, :multipart]
   end
 
 
   namespace :api do
+    Mix.Project.app_path <> "/static/" |> IO.inspect
     get "/", do: text(conn, ":ok")
 
     desc "echo back a POSTed value, for test"
@@ -44,7 +51,17 @@ defmodule Leeloo.Api do
         requires :comparison, type: File, default: nil
       end
     end
-    post "/compare/pngs", do: compare_images(conn, params)
+    post "/compare/pngs" do
+      # todo check if the files exist ...
+      p =
+      %{images:
+        %{
+         comparison: File.read!(params[:images][:comparison].path),
+         reference: File.read!(params[:images][:reference].path)
+        }, return_path_to_visual_diff: true
+      }
+      compare_images(conn, p)
+    end
   end
 
   rescue_from :all, as: e do
@@ -56,7 +73,18 @@ defmodule Leeloo.Api do
   defp compare_images(conn, params) do
     r = case ImageDiff.compare(params[:images][:reference], params[:images][:comparison]) do
       {:error, :no_match, metrics, difference} ->
-        %{error: "no_match", diff_metric: metrics, diff_visual: difference}
+        if params[:return_path_to_visual_diff] do
+          imgdata = difference |> String.split(",") |> List.last |> Base.decode64!
+          visual_diff_path = "static/#{SecureRandom.urlsafe_base64}.png"
+          {:ok, file} = File.open(visual_diff_path, [:write])
+          IO.binwrite(file, imgdata)
+          File.close(file)
+
+          %{error: "no_match", diff_metric: metrics, diff_visual: visual_diff_path}
+        else
+          %{error: "no_match", diff_metric: metrics, diff_visual: difference}
+        end
+
       {:ok, :match} ->
         %{ok: "match"}
       {:error, :invalid_input} -> %{error: "invalid_input"}

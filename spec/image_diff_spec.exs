@@ -21,7 +21,7 @@ defmodule Leeloo.ImageDiffSpec do
     end
 
     it "returns and error when comparing two different PNG images " do
-      {:error, :no_match, metrics, difference} =
+      {:error, :no_match, metrics, _difference} =
         ImageDiff.compare(File.read!(shared.image_png_reference_path),
               File.read!(shared.image_png_comparison_path))
       expect({:error, :no_match, metrics}).to eq({:error, :no_match, 526})

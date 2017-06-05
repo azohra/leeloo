@@ -1,4 +1,6 @@
 defmodule Leeloo.ImageDiff do
+  require Logger
+
   @moduledoc """
   Matcher contains the support for using Imagemagick for comparing two PNG images
   """
@@ -20,8 +22,12 @@ defmodule Leeloo.ImageDiff do
     File.open!(comp_path, [:write, :binary]) |> IO.binwrite(from_data_url(comparison))
 
     # compare -metric AE ref.png comp.png d.png
-    {metrics, _} = System.cmd("compare",
+    {{metrics, _}, _time} = measure fn  ->
+      System.cmd("compare",
       ["-metric", "AE", ref_path, comp_path, diff_path], stderr_to_stdout: true)
+    end
+
+    # Logger.info time
 
     # uncomment next, if interested, for debugging purposes?!
     # IO.puts("#{inspect metrics}: #{diff_path}")
@@ -49,4 +55,14 @@ defmodule Leeloo.ImageDiff do
         data
     end
   end
+
+  # measure a function execution and returns its result(s) and the execution time in seconds
+  defp measure(func) do
+    {time, results} = func |> :timer.tc # microseconds ( μs)
+    {results, time/1_000_000}
+  end
+
+  # defp pretty_time(ms) do
+  #   Float.floor(ms/1_000_000, 1) |> Kernel.to_string
+  # end
 end

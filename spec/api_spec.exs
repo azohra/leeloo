@@ -37,6 +37,38 @@ defmodule Leeloo.ApiSpec do
       let :no_images, do: %{images: %{ reference: nil, comparison: nil}}
       let :similar_images, do: %{images: %{ reference: shared.image_string_reference, comparison: shared.image_string_reference}}
 
+      let :similar_png_images do
+        %{images:
+          %{
+            reference:
+              %Plug.Upload{
+                content_type: "application/octet-stream",
+                filename: "p1.png",
+                path: shared.image_png_reference_path},
+            comparison:
+            %Plug.Upload{
+              content_type: "application/octet-stream",
+              filename: "p1.png",
+              path: shared.image_png_reference_path}
+          }
+        }
+      end
+
+      let :different_png_images do
+        %{images:
+          %{
+            reference:
+              %Plug.Upload{
+                filename: "p1.png",
+                path: shared.image_png_reference_path},
+            comparison:
+            %Plug.Upload{
+              filename: "p1_2.png",
+              path: shared.image_png_comparison_path}
+          }
+        }
+      end
+
       it "ignores the requests with invalid parameters" do
         r = build_conn()
           |> put_body_or_params(no_images())
@@ -45,7 +77,17 @@ defmodule Leeloo.ApiSpec do
         expect(r).to eq %{"error" => "invalid_input"}
       end
 
-      it "finds no difference between two similar images" do
+      it "finds no difference between two similar PNG images" do
+        r = build_conn()
+          |> put_body_or_params(similar_png_images())
+          |> post("/api/compare/pngs")
+          |> json_response
+
+        # assert response.status == 201
+        expect(r).to eq %{"ok" => "match"}
+      end
+
+      it "finds no difference between two similar Base64 encoded images" do
         r = build_conn()
           |> put_body_or_params(similar_images())
           |> post("/api/compare/png_strings")
