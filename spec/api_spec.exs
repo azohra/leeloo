@@ -30,7 +30,8 @@ defmodule Leeloo.ApiSpec do
       let :diff_images do
         %{images: %{
             reference: shared.image_string_reference,
-            comparison: shared.image_string_comparison}
+            comparison: shared.image_string_comparison},
+            fuzz: "0%"
         }
       end
 

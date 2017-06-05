@@ -10,7 +10,8 @@ defmodule Leeloo.ImageDiff do
   Base64 encoded PNG strings
 
   """
-  def compare(reference, comparison) when is_binary(reference) and is_binary(comparison) do
+  def compare(reference, comparison, fuzz \\ "0%")
+  def compare(reference, comparison, fuzz) when is_binary(reference) and is_binary(comparison) do
     Temp.track!
     dir_path = Temp.mkdir!("leeloo")
 
@@ -24,7 +25,7 @@ defmodule Leeloo.ImageDiff do
     # compare -metric AE ref.png comp.png d.png
     {{metrics, _}, _time} = measure fn  ->
       System.cmd("compare",
-      ["-metric", "AE", ref_path, comp_path, diff_path], stderr_to_stdout: true)
+      ["-metric", "AE", "-fuzz", fuzz, ref_path, comp_path, diff_path], stderr_to_stdout: true)
     end
 
     # Logger.info time
@@ -48,7 +49,7 @@ defmodule Leeloo.ImageDiff do
     end
   end
 
-  def compare(_, _), do: {:error, :invalid_input}
+  def compare(_, _, _), do: {:error, :invalid_input}
 
   #extract the image corpus from an encoded data_url parameter
   defp from_data_url(data) do

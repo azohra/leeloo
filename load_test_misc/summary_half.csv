@@ -1,0 +1,3 @@
+Label,# Samples,Average,Min,Max,Std. Dev.,Error %,Throughput,KB/sec,Avg. Bytes
+main:compare_PNGs,300,2885,2277,3877,201.69,0.00%,1.7,0.49,295.0
+TOTAL,300,2885,2277,3877,201.69,0.00%,1.7,0.49,295.0

@@ -71,24 +71,24 @@ COV    FILE                                        LINES RELEVANT   MISSED
 ```elixir
 $ mix run --no-halt
 
-23:43:16.398 [info]  Starting Elixir.Leeloo.Api with Cowboy on http://127.0.0.1:8080
+23:43:16.398 [info]  Starting Elixir.Leeloo.Api with Cowboy on http://127.0.0.1:4000
 ```
 
-`Leelo` is up and receiving requests at `http://127.0.0.1:8080`
+`Leelo` is up and receiving requests at `http://127.0.0.1:4000`
 
 Quick test:
 
 ```shell
-$ curl http://127.0.0.1:8080/api/echo -X POST
+$ curl http://127.0.0.1:4000/api/echo -X POST
 ```
 The server will respond with: `{"echo":"Sup?!"}`
 
 ## Play with (:base64 encoded) images
 
-Given you Base64 encoded the desired images and having the server running at `http://127.0.0.1:8080`, run the following simple test:
+Given you Base64 encoded the desired images and having the server running at `http://127.0.0.1:4000`, run the following simple test:
 
 ```shell
-curl -H "Content-Type:application/json" -X POST http://127.0.0.1:8080/api/compare/png_strings \
+curl -H "Content-Type:application/json" -X POST http://127.0.0.1:4000/api/compare/png_strings \
   -d '{"images": {"reference" : "data:image/png;base64,iVBORw0KG...gg==", "comparison": "data:image/png;base64,iVBORw0KGgoRK5....CYII="}}'
 
 ```
@@ -111,6 +111,94 @@ and on the server console, you can see the logs:
 
 Ok, `14ms` it's a lot for an Elixir app, but don't forget that we run an external command under the hood; imagemagick
 
-That's it, for this prototype.
+## **Upload** and Compare
+
+To reduce the payload and streamline the API dialog, you can also upload the image files, rather than encoding them and shipping them as large strings. 
+
+Here's a `curl` command to get you started:
+
+```shell
+curl -X POST http://localhost:4000/api/compare/pngs \
+  -F "images[reference]=@/path/to/file1.png" \
+  -F "images[comparison]=@/path/to/file2.png"
+```
+
+When uploading images and Leeloo finds differences the server will respond with something like this:
+
+```json
+{
+ "error": "no_match",
+ "diff_visual":"static/bTdRMzlXSWo5QmpZcHZJdHpNQ2JEUT09.png", 
+ "diff_metric":3120
+}
+```
+
+Observe the `diff_visual` attribute! Leeloo saves the image resulting from cmparing the two images, the reference image and the comparison one, and replies back with a link from where you can download it. Basically, point your browser to `http://localhost:4000/static/bTdRMzlXSWo5QmpZcHZJdHpNQ2JEUT09.png` and you can download the image file containing the visual differences between the two images.
+
+### One more thing
+
+When using the upload images api, you can also specify a new attribute: `fuzz`. Like this:
+
+```shell
+curl -X POST http://localhost:4000/api/compare/pngs \
+  -F "images[fuzz]=10%" -F "images[reference]=@/path/to/file1.png" \
+  -F "images[comparison]=@/path/to/file2.png"
+```
+
+Use this option to match colors that are close to the target color in RGB space and eventually ignore the colors that differ by a small amount. This option can account for these differences.
+
+The `fuzz` distance can be a percentage of the maximum possible intensity; i.e. `20%`
+If you set `fuzz` to 100%, then you'll get a `match` between two **different** images. Use it with care :)
+
+### Some stats
+
+We load tested Leeloo, with 6 users, on a MacBook Pro with the following characteristics:
+
+```
+Processor Name: Intel Core i7
+Processor Speed:  2.2 GHz
+Number of Processors: 1
+Total Number of Cores:  4
+Memory: 16 GB
+```
+
+And obtained the following stats:
+
+#### Large images (~6MB)
+
+![](load_test_misc/rtot_large.png)
+
+summary:
+
+| Label             | # Samples | Average | Min  | Max  | Std. Dev. | Error % | Throughput | KB/sec | Avg. Bytes | 
+|-------------------|-----------|---------|------|------|-----------|---------|------------|--------|------------| 
+| main:compare_PNGs | 300       | 4774    | 3882 | 5313 | 143.00    | 0.00%   | 1.1        | 0.32   | 295.0      | 
+| TOTAL             | 300       | 4774    | 3882 | 5313 | 143.00    | 0.00%   | 1.1        | 0.32   | 295.0      | 
+
+
+#### Medium images (~3MB)
+
+![](load_test_misc/rtot_half.png)
+
+summary:
+
+| Label             | # Samples | Average | Min  | Max  | Std. Dev. | Error % | Throughput | KB/sec | Avg. Bytes | 
+|-------------------|-----------|---------|------|------|-----------|---------|------------|--------|------------| 
+| main:compare_PNGs | 300       | 2885    | 2277 | 3877 | 201.69    | 0.00%   | 1.7        | 0.49   | 295.0      | 
+| TOTAL             | 300       | 2885    | 2277 | 3877 | 201.69    | 0.00%   | 1.7        | 0.49   | 295.0      | 
+
+
+#### "Small" images (~1MB)
+![](load_test_misc/rtot_small.png)
+
+summary:
+
+| Label             | # Samples | Average | Min | Max | Std. Dev. | Error % | Throughput | KB/sec | Avg. Bytes | 
+|-------------------|-----------|---------|-----|-----|-----------|---------|------------|--------|------------| 
+| main:compare_PNGs | 300       | 818     | 699 | 960 | 47.80     | 0.00%   | 4.2        | 1.23   | 297.0      | 
+| TOTAL             | 300       | 818     | 699 | 960 | 47.80     | 0.00%   | 4.2        | 1.23   | 297.0      | 
+
+
+`Leeloo` is currently under development, but ready for some real life challanges :)
 
 Enjoy!

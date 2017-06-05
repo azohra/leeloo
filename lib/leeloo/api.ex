@@ -41,6 +41,7 @@ defmodule Leeloo.Api do
       requires :images, type: Map do
         requires :reference, type: String, default: nil
         requires :comparison, type: String, default: nil
+        requires :fuzz, type: String, default: "0%"
       end
     end
     post "/compare/png_strings", do: compare_images(conn, params)
@@ -49,6 +50,7 @@ defmodule Leeloo.Api do
       requires :images, type: Map do
         requires :reference, type: File, default: nil
         requires :comparison, type: File, default: nil
+        requires :fuzz, type: String, default: "0%"
       end
     end
     post "/compare/pngs" do
@@ -57,7 +59,8 @@ defmodule Leeloo.Api do
       %{images:
         %{
          comparison: File.read!(params[:images][:comparison].path),
-         reference: File.read!(params[:images][:reference].path)
+         reference: File.read!(params[:images][:reference].path),
+         fuzz: params[:images][:fuzz]
         }, return_path_to_visual_diff: true
       }
       compare_images(conn, p)
@@ -71,7 +74,7 @@ defmodule Leeloo.Api do
   end
 
   defp compare_images(conn, params) do
-    r = case ImageDiff.compare(params[:images][:reference], params[:images][:comparison]) do
+    r = case ImageDiff.compare(params[:images][:reference], params[:images][:comparison], params[:images][:fuzz]) do
       {:error, :no_match, metrics, difference} ->
         if params[:return_path_to_visual_diff] do
           imgdata = difference |> String.split(",") |> List.last |> Base.decode64!

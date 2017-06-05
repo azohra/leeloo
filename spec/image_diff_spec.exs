@@ -20,6 +20,11 @@ defmodule Leeloo.ImageDiffSpec do
         File.read!(shared.image_png_reference_path))).to eq({:ok, :match})
     end
 
+    it "is a match between two **different** PNG images when the fuzz factor is 100%" do
+      expect(ImageDiff.compare(File.read!(shared.image_png_reference_path),
+        File.read!(shared.image_png_comparison_path), "100%")).to eq({:ok, :match})
+    end
+
     it "returns and error when comparing two different PNG images " do
       {:error, :no_match, metrics, _difference} =
         ImageDiff.compare(File.read!(shared.image_png_reference_path),
