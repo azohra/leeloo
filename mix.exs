@@ -29,6 +29,7 @@ defmodule Leeloo.Mixfile do
       {:maru, "~> 0.11.4"},
       {:espec, "~> 1.4", only: :test},
       {:temp, "~> 0.4.3"},
+      {:mix_docker, "~> 0.4.2"},
       {:excoveralls, "~> 0.6.3", only: [:dev, :test]},
       {:mix_test_watch, "~> 0.4.0"},
       {:secure_random, "~> 0.5"},
