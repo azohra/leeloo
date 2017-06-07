@@ -11,6 +11,9 @@ defmodule Leeloo.Api do
 
   before do
     plug Plug.Logger
+    plug Leeloo.MetricsExporter     # makes the /metrics URL happen
+    plug Leeloo.PipelineInstrumenter   # measures pipeline exec times
+
     plug Plug.Static,
       at: "/static", length: @max_length,
       from: Path.join(~w(#{File.cwd!} static))
