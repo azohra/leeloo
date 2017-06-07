@@ -1,7 +1,10 @@
 defmodule Leeloo.PipelineInstrumenter do
+  require Logger
+
   use Prometheus.PlugPipelineInstrumenter
 
   def label_value(:request_path, conn) do
     conn.request_path
   end
+
 end

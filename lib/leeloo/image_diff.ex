@@ -1,5 +1,6 @@
 defmodule Leeloo.ImageDiff do
   require Logger
+  use Prometheus.Metric
 
   @moduledoc """
   Matcher contains the support for using Imagemagick for comparing two PNG images
@@ -26,24 +27,34 @@ defmodule Leeloo.ImageDiff do
     {{metrics, _}, _time} = measure fn  ->
       System.cmd("compare",
       ["-metric", "AE", "-fuzz", fuzz, ref_path, comp_path, diff_path], stderr_to_stdout: true)
-    end
+     end
 
     # Logger.info time
+    # Counter.inc([name: "processed_images", labels: [:images], registry: :default])
 
     # uncomment next, if interested, for debugging purposes?!
     # IO.puts("#{inspect metrics}: #{diff_path}")
+    Counter.inc(:images, 2)
+    Prometheus.Push.push(%{job: "images", grouping_key: [{"leeloo", "images"}]})
+
     cond do
       String.starts_with?(metrics, "compare: image widths or heights differ") ->
+        Counter.inc(:not_matching_images)
+        Prometheus.Push.push(%{job: "not_matching_images", grouping_key: [{"leeloo", "images"}]})
         Temp.cleanup
         {:error, :widths_or_heights_differ}
 
       (pixels_diff = String.to_integer(metrics)) > 0 ->
         with {:ok, imageData} <- File.read(diff_path) do
           base64data = Base.encode64(imageData)
+          Counter.inc(:not_matching_images)
+          Prometheus.Push.push(%{job: "not_matching_images", grouping_key: [{"leeloo", "images"}]})
           Temp.cleanup
           {:error, :no_match, pixels_diff, "data:image/png;base64," <> base64data}
         end
       true ->
+        Counter.inc(:matching_images)
+        Prometheus.Push.push(%{job: "matching_images", grouping_key: [{"leeloo", "images"}]})
         Temp.cleanup
         {:ok, :match}
     end

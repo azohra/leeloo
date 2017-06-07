@@ -22,6 +22,7 @@
   "prometheus": {:hex, :prometheus, "3.3.1", "bc680e9d7aa53cbc1b554093968718d25ba264cd936840b24278e1cb77b97225", [:mix, :rebar3], [], "hexpm"},
   "prometheus_ex": {:hex, :prometheus_ex, "1.3.0", "eddc8cc9e384fcf20c4d42f71e539b49705bb44f95f5e1b19b967fad92c63526", [:mix], [{:prometheus, "~> 3.3", [hex: :prometheus, repo: "hexpm", optional: false]}], "hexpm"},
   "prometheus_plugs": {:hex, :prometheus_plugs, "1.1.3", "53bb8cb31121e4491928ed56c0346a7a7571c830e9abdcd3205f09c65c0256c7", [:mix], [{:accept, "~> 0.1", [hex: :accept, repo: "hexpm", optional: false]}, {:plug, "~> 1.0", [hex: :plug, repo: "hexpm", optional: false]}, {:prometheus_ex, "~> 1.1", [hex: :prometheus_ex, repo: "hexpm", optional: false]}, {:prometheus_process_collector, "~> 1.0.0", [hex: :prometheus_process_collector, repo: "hexpm", optional: true]}], "hexpm"},
+  "prometheus_push": {:hex, :prometheus_push, "0.0.1", "f4c90c4b2a69fd3e8e59f3a3ec1634efe9a0250fe54916646f7ced99800d934d", [:mix], [{:prometheus_ex, "~> 1.2", [hex: :prometheus_ex, repo: "hexpm", optional: false]}], "hexpm"},
   "ranch": {:hex, :ranch, "1.3.2", "e4965a144dc9fbe70e5c077c65e73c57165416a901bd02ea899cfd95aa890986", [:rebar3], [], "hexpm"},
   "secure_random": {:hex, :secure_random, "0.5.1", "c5532b37c89d175c328f5196a0c2a5680b15ebce3e654da37129a9fe40ebf51b", [:mix], [], "hexpm"},
   "sizeable": {:hex, :sizeable, "1.0.2", "625fe06a5dad188b52121a140286f1a6ae1adf350a942cf419499ecd8a11ee29", [:mix], [], "hexpm"},
