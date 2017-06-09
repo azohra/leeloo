@@ -35,8 +35,12 @@ defmodule Leeloo.ApiSpec do
         }
       end
 
-      let :no_images, do: %{images: %{ reference: nil, comparison: nil}}
-      let :similar_images, do: %{images: %{ reference: shared.image_string_reference, comparison: shared.image_string_reference}}
+      let :no_images, do: %{images: %{ reference: nil, comparison: nil }}
+      let :similar_images do
+        %{images:
+          %{ reference: shared.image_string_reference, comparison: shared.image_string_reference}
+        }
+      end
 
       let :similar_png_images do
         %{images:
@@ -75,7 +79,8 @@ defmodule Leeloo.ApiSpec do
           |> put_body_or_params(no_images())
           |> post("/api/compare/png_strings")
           |> json_response
-        expect(r).to eq %{"error" => "invalid_input"}
+        expect(r).to have_value("invalid_input")
+        expect(r).to have_key("transaction")
       end
 
       it "finds no difference between two similar PNG images" do
@@ -85,7 +90,8 @@ defmodule Leeloo.ApiSpec do
           |> json_response
 
         # assert response.status == 201
-        expect(r).to eq %{"ok" => "match"}
+        expect(r).to have_value("match")
+        expect(r).to have_key("transaction")
       end
 
       it "finds no difference between two similar Base64 encoded images" do
@@ -94,7 +100,8 @@ defmodule Leeloo.ApiSpec do
           |> post("/api/compare/png_strings")
           |> json_response
 
-        expect(r).to eq %{"ok" => "match"}
+        expect(r).to have_value("match")
+        expect(r).to have_key("transaction")
       end
 
       it "returns the metric difference between two different images and the encoded visual difference" do
@@ -106,7 +113,12 @@ defmodule Leeloo.ApiSpec do
         expect(r["diff_metric"]).to be 526
         expect(r["diff_visual"]).to start_with("data:image/png;base64,")
         expect(r["error"]).to eq("no_match")
+        expect(r).to have_key("transaction")
       end
     end
   end
+
+  # defp my_json_response(conn) do
+  #   conn.resp_body |> IO.inspect |> Poison.decode!
+  # end
 end

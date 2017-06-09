@@ -3,7 +3,7 @@ defmodule Leeloo.Mixfile do
 
   def project do
     [app: :leeloo,
-     version: "0.1.0",
+     version: "0.2.0",
      elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -19,7 +19,8 @@ defmodule Leeloo.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger, :maru],
+    [extra_applications: [ :prometheus, :logger, :maru, :prometheus_ex,
+          :prometheus_plugs, :prometheus_push],
      mod: {Leeloo, []}]
   end
 
@@ -32,7 +33,13 @@ defmodule Leeloo.Mixfile do
       {:excoveralls, "~> 0.6.3", only: [:dev, :test]},
       {:mix_test_watch, "~> 0.4.0"},
       {:secure_random, "~> 0.5"},
-      {:sizeable, "~> 1.0"}
+      {:sizeable, "~> 1.0"},
+      {:prometheus_ex, "~> 1.0"},
+      {:prometheus_push, "~> 0.0.1"},
+      {:decorator, "~> 0.4"},
+      {:prometheus_plugs, "~> 1.0"} #,
+      # not for OSX:
+      # {:prometheus_process_collector, "~> 1.0"}
     ]
   end
 end
