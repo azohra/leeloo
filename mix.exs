@@ -36,6 +36,7 @@ defmodule Leeloo.Mixfile do
       {:sizeable, "~> 1.0"},
       {:prometheus_ex, "~> 1.0"},
       {:prometheus_push, "~> 0.0.1"},
+      {:decorator, "~> 0.4"},
       {:prometheus_plugs, "~> 1.0"} #,
       # not for OSX:
       # {:prometheus_process_collector, "~> 1.0"}

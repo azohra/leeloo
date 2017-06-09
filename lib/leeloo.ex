@@ -16,10 +16,7 @@ defmodule Leeloo do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Leeloo.Supervisor]
 
-    Counter.declare([name: :images, help: "total images"])
-    Counter.declare([name: :matching_images, help: "total matching images"])
-    Counter.declare([name: :not_matching_images, help: "total not matching images"])
-
+    Leeloo.Instrumenter.setup()
     Leeloo.PipelineInstrumenter.setup()
     # Linux only: Prometheus.Registry.register_collector(:prometheus_process_collector)
     Leeloo.MetricsExporter.setup()
