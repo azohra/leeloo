@@ -14,14 +14,13 @@ For testing, we'll use these two images:
 |--------|---|-----|
 |![](spec/fixtures/p1.png) | vs. | ![](spec/fixtures/p1_2.png)|
 
-The prototype must successfully return the following:
+The web app must successfully return the following:
 
-- if the images match: `{"ok": "match"}`
-- if the images are different (excerpt):
-   `{"transaction":"K1d5YW...","error":"no_match","diff_visual":"static/K1d5YW.png","diff_metric":526}`
-- if the images have different heights or widths: `{:error, :widths_or_heights_differ}`
+- `{"ok": "match"}` - when the two images are matching
+- `{"transaction":"K1d5YW...","error":"no_match","diff_visual":"static/K1d5YW.png","diff_metric":526}` - when the images don't match (excerpt)
+- `{:error, :widths_or_heights_differ}` when the two images have different heights or widths
 
-The differences between the two test images should look like this, after processing:
+The differences between our two test images should look like this:
 
 ![](spec/fixtures/p1vsp2.png)
 
@@ -84,9 +83,7 @@ The server will respond with: `:ok`
 
 ## **Upload** and Compare
 
-To reduce the payload and streamline the API dialog, you can also upload the image files, rather than encoding them and shipping them as large strings. 
-
-Here's a `curl` command to get you started:
+Upload two (.PNG) images and find if they match or not. Here's a `curl` command to get you started:
 
 ```shell
 curl -X POST http://127.0.0.1:4000/api/compare/pngs \
