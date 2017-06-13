@@ -104,6 +104,24 @@ When uploading images and Leeloo finds differences the server will respond with 
 
 Observe the `diff_visual` attribute! Leeloo saves the image resulting from comparing the two images, the reference image and the comparison one, and replies back with a link to the result. Basically, point your browser to `http://127.0.0.1:4000/static/K1d5YWpNQ2JEUT09.png`, to download the annotated difference between the two images.
 
+### Security
+
+If you want to host Leeloo on a public server, we recommend using the simple token-based authentication support, available in the app. Define a token in your config files, and the user must supply the expected value via the `token` request parameter. Example of a config file, containing a token:
+
+
+```elixir
+# config/prod.exs
+use Mix.Config
+
+config :maru, Leeloo.Api,
+  server: true,
+  http:   [ip: {0,0,0,0}, port: {:system, "PORT"}],
+  url:    [host: "${APP_DOMAIN}" ],
+  token:   ""
+
+```
+
+
 ### One more thing
 
 When using the upload images api, you can also specify a new attribute: `fuzz`. Like this:
@@ -122,3 +140,9 @@ If you set `fuzz` to 100%, then you'll get a `match` between two **different** i
 `Leeloo` is currently under development.
 
 Enjoy!
+
+## LICENSE
+
+Copyright (c) 2017 Automation Wizards
+
+MIT License, see [LICENSE](LICENSE).

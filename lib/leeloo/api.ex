@@ -3,10 +3,13 @@ defmodule Leeloo.Api do
   Documentation for Leeloo.Api.
   """
   use Maru.Router
+  use Maru.Type
+
   require IEx
   require Logger
 
   alias Leeloo.ImageDiff
+  @token Application.get_env(:maru, Leeloo.Api, "")[:token]
 
   @max_length 52_428_800 # 50MB
 
@@ -25,7 +28,6 @@ defmodule Leeloo.Api do
       parsers: [:urlencoded, :json, :multipart]
   end
 
-
   namespace :api do
     Mix.Project.app_path <> "/static/"
     get "/", do: text(conn, ":ok")
@@ -37,8 +39,17 @@ defmodule Leeloo.Api do
         requires :comparison, type: File, default: nil
         requires :fuzz, type: String, default: "0%"
       end
+      requires :token, type: String, default: ""
     end
     post "/compare/pngs" do
+      if @token != params[:token] do
+        conn
+        |> put_status(403)
+        |> json(%{error: "Authorization error; invalid token"})
+
+        raise("Unauthorized")
+      end
+
       p =
       %{images:
         %{
@@ -51,10 +62,17 @@ defmodule Leeloo.Api do
     end
   end
 
+
+  rescue_from Maru.Exceptions.NotFound, as: e do
+    conn
+    |> put_status(404)
+    |> text("Not Found: /#{e.path_info} ")
+  end
+
   rescue_from :all, as: e do
     conn
     |> put_status(500)
-    |> text("ERROR: #{inspect e}")
+    |> json(%{error: "#{e.message}"})
   end
 
   defp compare_images(conn, params) do
