@@ -117,4 +117,5 @@ Temporary Items
 
 
 /static/*
+!/static/.keep
 .vscode
