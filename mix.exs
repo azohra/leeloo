@@ -27,17 +27,17 @@ defmodule Leeloo.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:maru, "~> 0.11.4"},
-      {:espec, "~> 1.4", only: :test},
-      {:temp, "~> 0.4.3"},
-      {:excoveralls, "~> 0.6.3", only: [:dev, :test]},
-      {:mix_test_watch, "~> 0.4.0"},
+      {:maru, "~> 0.12"},
+      {:espec, "~> 1.5", only: :test},
+      {:temp, "~> 0.4.4"},
+      {:excoveralls, "~> 0.8", only: [:dev, :test]},
+      {:mix_test_watch, "~> 0.5"},
       {:secure_random, "~> 0.5"},
       {:sizeable, "~> 1.0"},
-      {:prometheus_ex, "~> 1.0"},
+      {:prometheus_ex, "~> 1.4.1"},
       {:prometheus_push, "~> 0.0.1"},
-      {:decorator, "~> 0.4"},
-      {:prometheus_plugs, "~> 1.0"} #,
+      {:decorator, "~> 1.2"},
+      {:prometheus_plugs, "~> 1.1"} #,
       # not for OSX:
       # {:prometheus_process_collector, "~> 1.0"}
     ]

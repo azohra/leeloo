@@ -1,5 +1,3 @@
-Maru.Test.start()
-
 ESpec.configure fn(config) ->
   config.before fn(tags) ->
     {
